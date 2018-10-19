@@ -1,0 +1,243 @@
+---
+title: "DPH101 Biostatistics I: Week 03 R Workshop"
+author: "Elmer V Villanueva"
+date: "September 28, 2018"
+output: html_document
+---
+
+---
+# Comment
+# setwd("F:/Dropbox/00 - Working Folder/Teaching/DPH101/2018-2019/Week 03/R03 R Workshop")
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Basic Probability
+## Binomial Probability
+$$ P(X=k) = \binom{n}{k} p^k (1-p)^{(n-k)} $$
+
+Given $p = 0.25$:
+
+1. What is the probability that you observe exactly 2 successes in 12 trials?
+```{r}
+dbinom(x = 2, size = 12, prob = 0.25)
+```
+
+2. What is the probability of observing two successes at most?
+```{r}
+dbinom(x = 0, size = 12, prob = 0.25) + dbinom(x = 1, size = 12, prob = 0.25) + dbinom(x = 2, size = 12, prob = 0.25)
+pbinom(q = 2, size = 12, prob = 0.25, lower.tail = TRUE)
+```
+*pbinom is accumulation, using "q" lower.tail means give me the lower tail that is smaller than 2.
+
+3. What is the probability of observing 3 or more successes?
+```{r}
+1 - pbinom(q = 2, size = 12, prob = 0.25, lower.tail = TRUE)
+pbinom(q = 2, size = 12, prob = 0.25, lower.tail = FALSE)
+```
+
+## Poisson probabilities
+You should review the `dpois()` and `ppois()` functions.
+
+## Normal probabilities
+You should review the `dnorm()` and `pnorm()` functions.
+*above two is the HOMEWORK.
+
+# Higher graphics
+## Preparing for the session
+### Set your working directory
+```{r echo=TRUE}
+setwd("~/R_Directory/DPH101_W3")
+```
+
+### Download the data file from ICE onto your working directory
+For this session, we will be using the `GLOW500FINAL.RData` file.
+
+### Load the data file onto the global environment
+```{r echo=TRUE}
+load("GLOW500FINAL.RData")
+```
+
+The dataframe is called `GLOW500_WORK`. Confirm that the data have been loaded and are reasonably correct.
+```{r echo=TRUE}
+str(GLOW500_WORK)
+head(GLOW500_WORK)
+attach(GLOW500_WORK)
+```
+*str means give me the structure of the data.
+*notice the first column after variale name is int(whole number), num(can contain decimals), for factor(no more a integer, change the integer into some practical meanings, 1 or 2 means others things).
+*LEARN how to change numeric into factor.
+
+### Install and load the ggplot2 package
+```{r eval=TRUE}
+if (!require("ggplot2")) install.packages("gglot2", repos = "https://mirrors.tuna.tsinghua.edu.cn/CRAN/")
+library(ggplot2)
+
+if (!require("ggthemes")) install.packages("ggthemes", repos = "https://mirrors.tuna.tsinghua.edu.cn/CRAN/")
+library(ggthemes)
+
+if (!require("scales")) install.packages("scales", repos = "https://mirrors.tuna.tsinghua.edu.cn/CRAN/")
+library(scales)
+
+if (!require("showtext")) install.packages("showtext", repos = "https://mirrors.tuna.tsinghua.edu.cn/CRAN/")
+library(showtext)
+```
+
+## Histograms
+The original histogram we produced in class was this.
+```{r echo=TRUE}
+hist(HEIGHT, breaks=15, col="tan", xlab="Height (cm)",
+     main="Histogram of Heights in GLOW500")
+```
+
+We can produce one in `ggplot2` easily.
+
+1. Initialise a plot by telling `ggplot2` that `GLOW500_WORK` is our data frame, and specify the variables on each axis. We then render this as histogram by adding the `geom_histogram` command. Note, specifically, that the for of the y axis is specified in this command.
+
+```{r echo=TRUE}
+hist1 <- ggplot(aes(x = HEIGHT),
+                data = GLOW500_WORK) + 
+         geom_histogram(aes(y = ..count..),
+                        bins = 15,
+                        colour = "black", 
+                        fill = "tan")
+hist1
+```
+
+2. Let us add titles.
+```{r echo=TRUE}
+hist1 <- hist1 + scale_x_continuous(name = "Height (cm)") +
+         scale_y_continuous(name = "Frequency") +
+         labs(title = "Frequency histogram of height",
+              subtitle = "Source: Global Longitudinal Study of Osteoporosis in Women")
+hist1
+```
+
+3. Instead of histograms, we can ask `ggplot2` to produce density plots by replacing `geom_histogram()` with `geom_density()`
+```{r echo=TRUE}
+hist1 <- ggplot(aes(x = HEIGHT),
+                data = GLOW500_WORK) + 
+         geom_density(colour = "black", 
+                      fill = "tan") + 
+         scale_x_continuous(name = "Height (cm)") +
+         scale_y_continuous(name = "Density") +
+         labs(title = "Density plot of height",
+              subtitle = "Source: Global Longitudinal Study of Osteoporosis in Women")
+hist1
+```
+
+4. We can produce histograms and densities by different factors. For example, let's produce densities of HEIGHT across levels of BMICAT.
+```{r echo=TRUE}
+hist1 <- ggplot(aes(x = HEIGHT, fill = BMICAT),
+                data = GLOW500_WORK) + 
+         geom_density(colour = "black", 
+                      fill = "tan") + 
+         scale_x_continuous(name = "Height (cm)") +
+         scale_y_continuous(name = "Density") +
+         labs(title = "Density plot of height by BMI",
+              subtitle = "Source: Global Longitudinal Study of Osteoporosis in Women") +
+         facet_grid(. ~ BMICAT)
+hist1
+```
+
+5. Finally, we can superimpose the densities on each other.
+```{r echo=TRUE}
+hist1 <- ggplot(aes(x = HEIGHT, fill = BMICAT),
+                data = GLOW500_WORK) + 
+         geom_density(position = "identity",
+                      alpha = 0.3) + 
+         scale_x_continuous(name = "Height (cm)") +
+         scale_y_continuous(name = "Density") +
+         labs(title = "Density plot of height by BMI",
+              subtitle = "Source: Global Longitudinal Study of Osteoporosis in Women")
+hist1
+```
+
+
+6. This might be a little hard to read, so we can adjust the `fill` option to `NA`, change the line colours and make it thicker.
+```{r echo=TRUE}
+hist1 <- ggplot(aes(x = HEIGHT, colour = BMICAT),
+                data = GLOW500_WORK) + 
+         geom_density(position = "identity",
+                      fill = NA,
+                      size = 1) + 
+         scale_x_continuous(name = "Height (cm)") +
+         scale_y_continuous(name = "Density") +
+         labs(title = "Density plot of height by BMI",
+              subtitle = "Source: Global Longitudinal Study of Osteoporosis in Women")
+hist1
+```
+
+I'm not quite sure that this is better, though.
+
+## Bar Charts
+In class, we learned how to produce a bar chart of BMICAT by AGECAT using the `graphics` package.
+```{r echo=TRUE}
+table(GLOW500_WORK$BMICAT, GLOW500_WORK$AGECAT)
+AGECAT.2 <- table(GLOW500_WORK$BMICAT, GLOW500_WORK$AGECAT)
+barplot(AGECAT.2,
+        xlab="Age Group (years)",
+        ylab="Frequency",
+        main="Distribution of BMI by Age",
+        legend.text=TRUE)
+```
+
+Let's begin building the chart in `ggplot2`. 
+
+1. Convert `AGECAT.2` from a table to a data frame.
+```{r echo=TRUE}
+AGECAT.2
+class(AGECAT.2)
+AGECAT.2.DF <- as.data.frame(AGECAT.2) 
+AGECAT.2.DF
+class(AGECAT.2.DF)
+```
+
+2. Initialise a plot by telling `ggplot2` that `AGECAT.2.DF` is our data frame, and specify the variables on each axis. We then render this as an bar plot by adding the `geom_area` command.
+```{r echo=TRUE}
+bar1 <- ggplot(aes(y = Freq, 
+                   x = AGECAT.2.DF[,2], fill = AGECAT.2.DF[,1]), 
+               data = AGECAT.2.DF) + 
+        geom_col()
+bar1
+```
+
+3. Change the position of the legend. 
+To label the bars, we add the `label` argument.
+```{r echo=TRUE}
+bar2 <- bar1 + theme(legend.position = "bottom", 
+                     legend.direction = "horizontal",
+                     legend.title = element_blank())
+bar2
+```
+
+4. Let us adjust the axis titles and produce a title for the bar chart.
+```{r echo=TRUE, warning=FALSE}
+bar3 <- bar2 + labs(title = "Distribution of BMI by AGE",
+                    subtitle = "Source: Global Longitudinal Study of Osteoporosis in Women") + 
+        labs(x = "Age Group (years)", y = "Frequency")
+bar3
+```
+
+5. We can use themes to make the chart appear similar to those, say, produced by *The Economist*.
+```{r echo=TRUE, warning=FALSE}
+library(ggthemes)
+bar4 <- bar3 + labs(title = "Distribution of BMI by AGE",
+                    subtitle = "Source: Global Longitudinal Study of Osteoporosis in Women") + 
+        labs(x = "Age Group (years)", y = "Frequency") +
+        theme_economist() + 
+        scale_color_economist() +
+        theme(axis.line.x = element_line(size = .5, 
+                                         colour = "black"),
+              legend.position = "bottom",
+              legend.direction = "horizontal",
+              legend.title = element_blank(),
+              plot.title = element_text(family = "Roboto Condensed"),
+              text = element_text(family = "Roboto Condensed")) +
+        guides(fill = guide_legend(reverse = T))
+bar4
+```
+
+
