@@ -1,0 +1,188 @@
+---
+title: "Week 04 Assignment ANSWERS"
+author: "Elmer V Villanueva"
+date: "October 4, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# New Functions
+
+In this document, I have used the following new R functions: `barplot()`, `sum()`, `curve()`, `polygon()`, `qnorm()`. You should review these functions.
+
+# Question 1
+
+Given $p=0.8$ and $n=17$, find
+
+1. $P(x=14)$
+```{r}
+# Draw the distribution
+t <- 0:17
+barplot(dbinom(x=t, size=t, prob=0.8), 
+        names.arg = t,
+        main = "Binomial Distribution (p=0.8, n=17)",
+        xlab = "Successes",
+        ylab = "Probability",
+        col = c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,"red",
+                NA,NA,NA))
+
+# Calculate the probability
+dbinom(x=14, size=17, prob=0.8)
+```
+
+*****
+     
+2. $P(x \geq 14)$
+```{r}
+# Draw the distribution
+t <- 0:17
+barplot(dbinom(x=t, size=t, prob=0.8), 
+        names.arg = t,
+        main = "Binomial Distribution (p=0.8, n=17)",
+        xlab = "Successes",
+        ylab = "Probability",
+        col = c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,"red",
+                "red","red","red"))
+
+# Calculate the probability
+dbinom(x=14, size=17, prob=0.8) + dbinom(x=15, size=17, prob=0.8) +
+    dbinom(x=16, size=17, prob=0.8) + dbinom(x=17, size=17, prob=0.8)
+sum(dbinom(x=14:17, size=17, prob=0.8))
+pbinom(q=13, size=17, prob=0.8, lower.tail=FALSE)
+```
+
+*****
+
+3. $P(x < 14)$
+```{r}
+# Draw the distribution
+t <- 0:17
+barplot(dbinom(x=t, size=t, prob=0.8), 
+        names.arg = t,
+        main = "Binomial Distribution (p=0.8, n=17)",
+        xlab = "Successes",
+        ylab = "Probability",
+        col = c("red","red","red","red","red","red","red",
+                "red","red","red","red","red","red","red",
+                NA,NA,NA,NA))
+
+# Calculate the probability
+sum(dbinom(x=0:13, size=17, prob=0.8))
+pbinom(q=13, size=17, prob=0.8, lower.tail=TRUE)
+1-pbinom(q=13, size=17, prob=0.8, lower.tail=FALSE)
+```
+
+*****
+
+4. $P(x \geq 16)$ if $n=20$
+```{r}
+# Draw the distribution
+t <- 0:20
+barplot(dbinom(x=t, size=t, prob=0.8), 
+        names.arg = t,
+        main = "Binomial Distribution (p=0.8, n=20)",
+        xlab = "Successes",
+        ylab = "Probability",
+        col = c(NA,NA,NA,NA,NA,NA,NA,NA,NA,
+                NA,NA,NA,NA,NA,NA,NA,"red",
+                "red","red","red","red"))
+
+# Calculate the probability
+pbinom(q=15, size=20, prob=0.8, lower.tail=FALSE)
+```
+
+*****
+
+5. $P(x = 20)$ if $n=25$
+```{r}
+# Draw the distribution
+t <- 0:25
+barplot(dbinom(x=t, size=t, prob=0.8), 
+        names.arg = t,
+        main = "Binomial Distribution (p=0.8, n=25)",
+        xlab = "Successes",
+        ylab = "Probability",
+        col = c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,
+                NA,NA,NA,NA,NA,NA,NA,NA,NA,"red",
+                NA,NA,NA,NA,NA))
+
+# Calculate the probability
+dbinom(x=20, size=25, prob=0.8)
+```
+
+*****
+
+# Question 2
+
+Given $\mu=3.4$, $\sigma=0.6$, find
+
+1. $P(x<2.5)$
+```{r}
+# Draw the normal curve
+curve(dnorm(x, mean=3.4, sd=0.6),
+      xlim=c(1.6,5.2),
+      main="Distribution of Birth Weights",
+      xlab="Weight (kg)",
+      ylab="Density") 
+
+# Map the shaded area
+cord.x <- c(1.6,seq(1.6,2.5,0.01),2.5) 
+cord.y <- c(0,dnorm(seq(1.6,2.5,0.01), mean=3.4, sd=0.6),0)
+polygon(cord.x,cord.y,col='red')
+##it is very important which will be used in submission
+
+# Calculate the probability
+pnorm(q=2.5, mean=3.4, sd=0.6, lower.tail=TRUE)
+```
+
+*****
+
+2. $P(x>4.6)$
+```{r}
+# Draw the normal curve
+curve(dnorm(x, mean=3.4, sd=0.6),
+      xlim=c(1.6,5.2),
+      main="Distribution of Birth Weights",
+      xlab="Weight (kg)",
+      ylab="Density") 
+
+# Map the shaded area
+cord.x <- c(4.6,seq(4.6,5.2,0.01),5.2) 
+cord.y <- c(0,dnorm(seq(4.6,5.2,0.01), mean=3.4, sd=0.6),0)
+polygon(cord.x,cord.y,col='red')
+
+# Calculate the probability
+pnorm(q=4.6, mean=3.4, sd=0.6, lower.tail=FALSE)
+```
+
+*****
+
+3. Lower and upper bound of the middle 80%
+
+```{r}
+# Draw the normal curve
+curve(dnorm(x, mean=3.4, sd=0.6),
+      xlim=c(1.6,5.2),
+      main="Distribution of Birth Weights",
+      xlab="Weight (kg)",
+      ylab="Density") 
+
+# Map the shaded area
+cord.x <- c(2.63,seq(2.63,4.17,0.01),4.17) 
+cord.y <- c(0,dnorm(seq(2.63,4.17,0.01), mean=3.4, sd=0.6),0)
+polygon(cord.x,cord.y,col='red')
+
+# Calculate the lower and upper bounds
+qnorm(p=0.1, mean=3.4, sd=0.6, lower.tail=TRUE)
+qnorm(p=0.1, mean=3.4, sd=0.6, lower.tail=FALSE)
+```
+
+# THE END
+
+
+
+
+
