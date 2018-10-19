@@ -1,0 +1,78 @@
+---
+title: "Week 05 R Workshop"
+author: "Elmer V Villanueva"
+date: "October 19, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Confidence Intervals in R: A Primer
+
+The general form of a confidence interval is 
+
+$$\text{estimator}\ \pm (\text{reliability coefficient}) \ \times \ (\text{standard error})$$
+
+We will learn more about confidence intervals in week 8. For the moment, the reliability coefficient $z_{(1-\alpha/2)}$ may be though of as a measure of our confidence with the following conversions:
+* 90% confidence: reliability coefficient = 1.64
+* 95% confidence: reliability coefficient = 1.96
+* 99% confidence: reliability coefficient = 2.58
+
+## Confidence interval of a mean
+
+For continuous data in which summaries by the mean make sense, then the confidence interval may be calculated as follows
+
+$$\text{estimator}\ \pm (\text{reliability coefficient}) \ \times \ (\text{standard error}) \\
+\bar{x} \pm z_{(1-\alpha/2)} \  \sigma_{SE},\ \text{where} \ \sigma_{SE}= \sigma/\sqrt{n} $$
+
+### Example
+
+Suppose that we observe a mean of 5 and a standard deviation of 2 in a sample of size 20. Find the 90% confidence interval of the mean.
+
+```{r}
+# Enter the values
+x_bar <- 5
+x_sd <- 2
+n_x <- 20
+
+# Calculate the standard error
+x_se <- x_sd/sqrt(n_x)
+
+# Calculate the lower limit of the interval
+x_ll <- x_bar - 1.64 * x_se; x_ll
+
+# Calculate the upper limit of the interval
+x_ul <- x_bar + 1.64 * x_se; x_ul
+```
+
+The results show that the 90% confidence interval of the mean is between 4.3 and 5.7.
+
+## Confidence interval of a proportion
+
+For proportions, the confidence interval may be calculated as follows
+
+$$\hat{x} \pm z_{(1-\alpha/2)} \  \sigma_{SE},\ \text{where} \ \sigma_{SE}= \sqrt{\hat{p}(1-\hat{p})/n}$$
+
+### Example
+Suppose that we observe 12 successes in 67 trials. Find the 99% confidence interval of the proportion.
+
+```{r}
+# Enter the values
+p_hat <- 12/67
+n_p <- 67
+
+# Calculate the standard error
+p_se <- sqrt(p_hat * (1 - p_hat) / n_p)
+
+# Calculate the lower limit of the interval
+p_ll <- p_hat - 2.58 * p_se; p_ll
+
+# Calculate the upper limit of the interval
+p_ul <- p_hat + 2.58 * p_se; p_ul
+```
+
+The results show that the 99% confidence interval of the proportion is between 5.8% and 30.0%.
+
+# THE END
