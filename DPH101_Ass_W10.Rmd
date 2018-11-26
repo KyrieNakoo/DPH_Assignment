@@ -126,8 +126,7 @@ Since t>-12.517, we consider the t statistic to be siginificantly larger than ex
 **Conclusions.** Reject the null hypothesis. Patients with primary hypertension (PH) have higher total cholesterol levels than normotensive (NT) patients (t = -3.95, P = 0.0000056).
 
 10. P-value
-There is a 0.00056% chance of observing a difference as small as observed if the primary hypertension (PH) have no higher total cholesterol levels than normotensive (NT) patients.
+There is a 0.00056% chance of observing a difference as small as observed if normotensive (NT) patients have no lower total cholesterol levels than the primary hypertension (PH). That means, the primary hypertension (PH) have no higher total cholesterol levels than normotensive (NT) patients.
 If the study is repeated many times, 99.99964% of the time, smaller differences will be observed, and 0.00056% of the time, larger differences will be observed.
-
 
      
