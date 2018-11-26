@@ -1,0 +1,119 @@
+1.Data
+# measurement of 133 patients with hypertension
+```{r}
+hyperM<-c(207, 221, 212, 191, 181, 210, 203, 208, 206, 208,
+          218, 210, 185, 168, 274, 214, 214, 175, 226, 280, 
+          168, 213, 225, 217, 185, 239, 226, 238, 228, 232, 
+          203, 236, 215, 284, 210, 188, 231, 226, 258, 260, 
+          201, 219, 220, 190, 172, 223, 260, 214, 245, 215, 
+          171, 221, 217, 265, 206, 261, 247, 182, 241, 202, 
+          198, 221, 162, 199, 182, 199, 216, 211, 196, 225, 
+          239, 203, 235, 168, 223, 199, 195, 244, 178, 134, 
+          203, 203, 214, 240, 236, 222, 222, 203, 178, 249, 
+          117, 212, 252, 272, 227, 200, 259, 203, 189, 245, 
+          181, 265, 207, 235, 218, 239, 152, 141, 226, 182, 
+          239, 231, 210, 237, 222, 195, 239, 203, 221, 180, 
+          183, 207, 237, 276, 266, 224, 251, 222, 224, 214, 
+          212, 174, 206
+          )
+```
+
+# measurement of 41 patients with nomortension
+```{r}
+normoM<-c(286, 189, 226, 196, 187, 142, 204, 179, 203, 212,
+          206, 163, 196, 196, 168, 189, 229, 142, 184, 168,
+          186, 121, 281, 203, 177, 135, 179, 161, 194, 206,
+          219, 173, 189, 194, 196, 212, 168, 188, 232, 242, 
+          200
+          )
+```
+
+# Structure and summary the data.
+```{r}
+PATIENT<-c(rep("NT", 41), rep("PH", 133))
+Mlev<-c(normoM, hyperM)           
+dat<-data.frame(PATIENT, Mlev)           
+str(dat)
+summary(dat)
+```
+The two samples are indenpendent and have no special relationships.
+
+# Draw plots & Visualization data
+```{r}
+boxplot(dat$Mlev ~ PATIENT,
+        ylab = "Cholesterol mg/dl")
+par(mfrow=c(2,2))
+hist(hyperM,
+     xlab = "Cholesterol mg/dl")
+hist(normoM,
+     xlab = "Cholesterol mg/dl")
+qqnorm(hyperM); qqline(hyperM)
+qqnorm(normoM); qqline(normoM)
+```
+**Conclusion.** There was no evidence of non-normality (boxplots not grossly asymmetrical). Thus the two samples can be assumed as normal distributed.
+
+# Summary statistics
+Determine the variances of two samples
+**Hypothesis** We first hypothesis that here is no differece between the two samples:
+** H0: sigma(PH) = sigma(NT) **
+** Ha: sigma(PH) != sigma(NT) **
+```{r}
+options(digits=5)
+par<-rbind(
+      MEAN<-tapply(Mlev, PATIENT, mean),
+      var<-tapply(Mlev, PATIENT, var))
+rownames(par)<-c("MEAN", "VAR")
+par 
+var.test(Mlev ~ PATIENT)
+```
+**Conclusion.**The test statistic F is 1.24, whih is between 0.77 and 2.13. Thus we fail to reject the H0. 
+2.Assumption
+From the boxplot, historgram and qqplot, we know that there was no evidence of non-normality (boxplots not grossly asymmetrical). 
+From the f test, we know that there is no significant difference between two sample variances.
+Therefore, we assume the two sample have equal mean and variance.
+Unpaired  t test with pooled variance is supposed to use.
+
+3. Hypothesis
+**Hypothesis** 
+Null hypothesis is: patients with primary hypertension (PH) have no higher total cholesterol levels than normotensive (NT) patients.
+Alternative hypothesis is: patients with primary hypertension (PH) have higher total cholesterol levels than normotensive (NT) patients
+** H0: mu(NT) >= mu(PH) **
+** Ha: mu(NT) < mu(PH) **
+
+4. Test statistic
+the test statistic of the difference between means of independent samples with equal variance is:
+differenece between sample means divided by pooled sample variance.
+Degree of freedom is n1+n2-2.
+
+5. Distribution of the test statistic
+t ~ N(0, 1)
+
+6. Decision Rule
+The level of significance alpha = 0.05
+Under H0, we expect t to be close to 0 or positive. Under Ha, we expect t to be significantly < 0.
+
+7. Calculation of test statistic
+```{r}
+Sp<-(40*var(normoM)+132*var(hyperM))/172
+t<-(mean(normoM)-mean(hyperM))/sqrt(Sp*(1/41+1/133))
+t
+```
+the test statistic is t = -3.95
+
+R has the t.test function enbeded:
+```{r}
+t.test(Mlev ~ PATIENT, data = dat, alternative = "less" ,var.equal = TRUE, paired = FALSE)
+```
+
+8. Statistical Decision
+Since t>-12.517, we consider the t statistic to be siginificantly larger than expected under H0
+
+9. Conclusion
+**Conclusions.** Reject the null hypothesis. Patients with primary hypertension (PH) have higher total cholesterol levels than normotensive (NT) patients (t = -3.95, P = 0.0000056).
+
+10. P-value
+There is a 0.00056% chance of observing a difference as small as observed if the primary hypertension (PH) have no higher total cholesterol levels than normotensive (NT) patients.
+If the study is repeated many times, 99.99964% of the time, smaller differences will be observed, and 0.00056% of the time, larger differences will be observed.
+
+
+     
