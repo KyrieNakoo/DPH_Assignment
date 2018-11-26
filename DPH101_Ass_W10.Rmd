@@ -64,6 +64,20 @@ par<-rbind(
       var<-tapply(Mlev, PATIENT, var))
 rownames(par)<-c("MEAN", "VAR")
 par 
+```
+```{r}
+install.packages("dplyr")
+library(dplyr)
+group_by(dat, PATIENT) %>%
+  summarise(
+    count = n(),
+    mean = mean(Mlev, na.rm = TRUE),
+    var = var(Mlev, na.rm = TRUE),
+    sd = sd(Mlev, na.rm = TRUE)
+  )
+```
+
+```{r}
 var.test(Mlev ~ PATIENT)
 ```
 **Conclusion.**The test statistic F is 1.24, whih is between 0.77 and 2.13. Thus we fail to reject the H0. 
@@ -86,7 +100,7 @@ differenece between sample means divided by pooled sample variance.
 Degree of freedom is n1+n2-2.
 
 5. Distribution of the test statistic
-t ~ N(0, 1)
+$$ t=[(\bar{X}_1-\bar{X_2})-(\mu_1-\mu_2)]/\sqrt{s^2_p(1/n_1+1/n_2)} $$
 
 6. Decision Rule
 The level of significance alpha = 0.05
